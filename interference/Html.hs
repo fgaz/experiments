@@ -35,4 +35,7 @@ form = H.form $ do
   br
   input ! type_ "number" ! id "height"
   br
-  button ! id "generate" $ "Generate (blocking)"
+  br
+  H.span ! id "generate"
+         ! A.style "padding: 5px; border: 1px solid gray; border-radius: 5px; background-color: lightgray; cursor: pointer;"
+         $ "Generate (blocking)"
