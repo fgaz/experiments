@@ -10,17 +10,24 @@ data Vect = Vect Double Double
 
 type Point = (Double, Double)
 
-v0 = Vect 1 1
+type FractDef = [(Trans,Vect)]
 
-ts0 = [Trans 0.5 (-0.5) 0.5 0.5, Trans 0.5 (-0.2) 0.3 0.3]
+idTrans = Trans 1 0 0 1
+
+halveTrans = Trans 0.5 0 0 0.5
+
+idVect = Vect 0 0
+
+fr0 = [(halveTrans, Vect 0 1), (halveTrans, Vect (cos (-pi/6)) (-0.5)), (halveTrans, Vect (cos (pi-pi/6)) 0.5)]
 
 minDist = 0.0001
 
-fract :: [Trans] -> Vect -> [Point]
-fract ts v = foldMap f ts
-  where f t | dist < minDist = [ (\(Vect x y) -> (x,y)) v' ]
-            | otherwise = fract (flip composeTrans t <$> ts0) v'
-          where v' = vectSum v $ applyTrans t v0
+fract :: (Trans,Vect) -> [Point]
+fract fr =  concat $ f fr <$> fr0
+  where f (t,v) (t0,v0) | dist < minDist = [ (\(Vect x y) -> (x,y)) v' ]
+                        | otherwise = fract (t',v')
+          where v' = vectSum v $ applyTrans t' v0
+                t' = composeTrans t0 t
                 dist = distance v v'
 
 distance (Vect a b) (Vect c d) = sqrt ((a-c)**2 + (b-d)**2)
@@ -32,12 +39,13 @@ composeTrans (Trans a b c d) (Trans e f g h) = Trans (a*e + c*f) (b*e + d*f) (a*
 vectSum (Vect a b) (Vect c d) = Vect (a+c) (b+d)
 
 placepix i (x,y) = writePixel i x' y' (255 :: Pixel8)
-  where x' = abs $ floor (x*500)
-        y' = abs $ floor (y*500)
+  where x' = min 1999 $ max 0 $ floor (x*1000+1000)
+        y' = min 1999 $ max 0 $ floor (y*1000+1000)
 
 main = do
-  imgm <- createMutableImage 500 500 (0 :: Pixel8)
-  let pixels = fract ts0 v0
+  imgm <- createMutableImage 2000 2000 (0 :: Pixel8)
+  let pixels = fract (idTrans,idVect)
+  --mapM_ print pixels
   mapM_ (placepix imgm) pixels
   img <- freezeImage imgm
   writeBitmap "image.bmp" img
