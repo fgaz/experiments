@@ -20,17 +20,19 @@ idVect = Vect 0 0
 
 sierpinski = [(halveTrans, Vect 0 1), (halveTrans, Vect (cos (-pi/6)) (-0.5)), (halveTrans, Vect (cos (pi-pi/6)) 0.5)]
 fern = [(Trans 0 0 0 0.16, Vect 0 0), (Trans 0.85 (-0.04) 0.04 0.85, Vect 0 1.60), (Trans 0.20 0.23 (-0.26) 0.22, Vect 0 1.60), (Trans (-0.15) 0.26 0.28 0.24, Vect 0 0.44)]
-fr0 = sierpinski
 
 minDist = 0.0001
 
-fract :: (Trans,Vect) -> [Point]
-fract fr =  concat $ f fr <$> fr0
+fract' :: [(Trans, Vect)] -> (Trans, Vect) -> [Point]
+fract' generators t =  concat $ f t <$> generators
   where f (t,v) (t0,v0) | dist < minDist = [ (\(Vect x y) -> (x,y)) v' ]
-                        | otherwise = fract (t',v')
+                        | otherwise = fract' generators (t',v')
           where v' = vectSum v $ applyTrans t' v0
                 t' = composeTrans t0 t
                 dist = distance v v'
+
+fract :: [(Trans, Vect)] -> [Point]
+fract generators = fract' generators (idTrans, idVect)
 
 distance (Vect a b) (Vect c d) = sqrt ((a-c)**2 + (b-d)**2)
 
@@ -46,7 +48,7 @@ placepix i (x,y) = writePixel i x' y' (255 :: Pixel8)
 
 main = do
   imgm <- createMutableImage 2000 2000 (0 :: Pixel8)
-  let pixels = fract (idTrans,idVect)
+  let pixels = fract sierpinski
   --mapM_ print pixels
   mapM_ (placepix imgm) pixels
   img <- freezeImage imgm
