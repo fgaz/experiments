@@ -43,7 +43,7 @@ fract' :: [(Trans, Vect)] -> (Trans, Vect) -> [Point]
 fract' generators t =  concat $ f t <$> generators
   where f (t,v) (t0,v0) | dist < minDist = [ (\(Vect x y) -> (x,y)) v' ]
                         | otherwise = fract' generators (t',v')
-          where v' = v <> applyTrans t' v0
+          where v' = v <> applyTrans t v0
                 t' = t0 <> t
                 dist = distance v v'
 
