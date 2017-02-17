@@ -18,6 +18,10 @@ halveTrans = Trans 0.5 0 0 0.5
 
 idVect = Vect 0 0
 
+scale x = Trans x 0 0 x
+
+rotate θ = Trans (cos θ) (sin θ) (-sin θ) (cos θ)
+
 sierpinski = [(halveTrans, Vect 0 1), (halveTrans, Vect (cos (-pi/6)) (-0.5)), (halveTrans, Vect (cos (pi-pi/6)) (-0.5))]
 fern = [(Trans 0 0 0 0.16, Vect 0 0), (Trans 0.85 (-0.04) 0.04 0.85, Vect 0 1.60), (Trans 0.20 0.23 (-0.26) 0.22, Vect 0 1.60), (Trans (-0.15) 0.26 0.28 0.24, Vect 0 0.44)]
 
