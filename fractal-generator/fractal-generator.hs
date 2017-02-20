@@ -73,6 +73,9 @@ pythagora = undefined
 
 
 minDist = 0.0001
+width = 2000
+height = 2000
+zoomFactor = 1000
 
 fract' :: [(Trans, Vect)] -> (Trans, Vect) -> [Point]
 fract' generators t =  foldMap (f t) generators
@@ -88,11 +91,11 @@ fract generators = fract' generators mempty
 
 
 placepix i (x,y) = writePixel i x' y' (255 :: Pixel8)
-  where x' = min 1999 $ max 0 $ floor (x*1000+1000)
-        y' = min 1999 $ max 0 $ floor (y*1000+1000)
+  where x' = min (width  -1) $ max 0 (floor (x * zoomFactor) + div width  2)
+        y' = min (height -1) $ max 0 (floor (y * zoomFactor) + div height 2)
 
 main = do
-  imgm <- createMutableImage 2000 2000 (0 :: Pixel8)
+  imgm <- createMutableImage width height (0 :: Pixel8)
   let pixels = fract sierpinski
   --mapM_ print pixels
   mapM_ (placepix imgm) pixels
